@@ -3,9 +3,10 @@ package hw4;
 import java.util.Objects;
 
 public class RelatedList {
-    private class Node {
+    class Node {
         Cat c;
         Node next;
+        Node prev;
 
         public Node(Cat c) {
             this.c = c;
@@ -30,8 +31,8 @@ public class RelatedList {
         }
     }
 
-    private Node head;
-    private int size;
+    Node head;
+    int size;
 
     public RelatedList() {
         head = null;
@@ -64,8 +65,9 @@ public class RelatedList {
         while (current != null) {
             sb.append(current);
             current = current.next;
-            sb.append((current == null) ? "]" : ", ");
+            sb.append((current == null) ? "" : ", ");
         }
+        sb.append("]");
         return sb.toString();
     }
 
@@ -73,7 +75,7 @@ public class RelatedList {
         return find(c) == null;
     }
 
-    private Node find(Cat c) {
+    Node find(Cat c) {
         if (isEmpty()) return null;
         Node current = head;
         while (!current.c.equals(c)) {
@@ -86,6 +88,7 @@ public class RelatedList {
     }
 
     public boolean delete(Cat c) {
+        if (isEmpty()) return false;
         Node current = head;
         Node previous = head;
         while (!current.c.equals(c)) {
@@ -96,6 +99,7 @@ public class RelatedList {
                 current = current.next;
             }
         }
+        size--;
         if (current == head) {
             head = head.next;
         } else {
