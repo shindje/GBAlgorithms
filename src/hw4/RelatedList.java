@@ -3,9 +3,10 @@ package hw4;
 import java.util.Objects;
 
 public class RelatedList {
-    private class Node {
+    class Node {
         Cat c;
         Node next;
+        Node prev;
 
         public Node(Cat c) {
             this.c = c;
@@ -30,8 +31,8 @@ public class RelatedList {
         }
     }
 
-    private Node head;
-    private int size;
+    Node head;
+    int size;
 
     public RelatedList() {
         head = null;
@@ -64,8 +65,9 @@ public class RelatedList {
         while (current != null) {
             sb.append(current);
             current = current.next;
-            sb.append((current == null) ? "]" : ", ");
+            sb.append((current == null) ? "" : ", ");
         }
+        sb.append("]");
         return sb.toString();
     }
 
@@ -73,7 +75,7 @@ public class RelatedList {
         return find(c) == null;
     }
 
-    private Node find(Cat c) {
+    Node find(Cat c) {
         if (isEmpty()) return null;
         Node current = head;
         while (!current.c.equals(c)) {
@@ -86,6 +88,7 @@ public class RelatedList {
     }
 
     public boolean delete(Cat c) {
+        if (isEmpty()) return false;
         Node current = head;
         Node previous = head;
         while (!current.c.equals(c)) {
@@ -96,6 +99,7 @@ public class RelatedList {
                 current = current.next;
             }
         }
+        size--;
         if (current == head) {
             head = head.next;
         } else {
@@ -104,4 +108,91 @@ public class RelatedList {
         return true;
     }
 
+    class RelatedListIterator implements ListIterator {
+        Node current;
+        Node previous;
+
+        RelatedListIterator() {
+            reset();
+        }
+
+        @Override
+        public void reset() {
+            current = head;
+            previous = null;
+        }
+
+        @Override
+        public Cat next() {
+            if (current == null || current.next == null)
+                return null;
+            previous = current;
+            current = current.next;
+            return current.c;
+        }
+
+        @Override
+        public Cat getCurrent() {
+            if (current == null)
+                return null;
+            else
+                return current.c;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (current == null)
+                return false;
+            else
+                return current.next != null;
+        }
+
+        @Override
+        public boolean atEnd() {
+            return !hasNext();
+        }
+
+        @Override
+        public boolean insertAfter(Cat c) {
+            if (current == null)
+                return false;
+            Node n = new Node(c);
+            n.next = current.next;
+            current.next = n;
+            size++;
+            return true;
+        }
+
+        @Override
+        public boolean insertBefore(Cat c) {
+            if (current == null)
+                return false;
+            Node n = new Node(c);
+            n.next = current;
+            if (current == head)
+                head = n;
+            else
+                previous.next = n;
+            previous = n;
+            return true;
+        }
+
+        @Override
+        public Cat deleteCurrent() {
+            if (current == null)
+                return null;
+            size--;
+            Cat temp = current.c;
+            if (current == head)
+                head = head.next;
+            else
+                previous.next = current.next;
+            current = current.next;
+            return temp;
+        }
+    }
+
+    public ListIterator getListIterator() {
+        return new RelatedListIterator();
+    }
 }
