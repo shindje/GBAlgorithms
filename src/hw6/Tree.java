@@ -34,7 +34,8 @@ public class Tree {
 
     TreeNode root;
 
-    public void insert(int val) {
+    public int insert(int val) {
+        int level = 1;
         TreeNode node = new TreeNode(val);
         if (root == null) {
             root = node;
@@ -45,21 +46,24 @@ public class Tree {
                 parent = current;
                 if (val < current.getValue()) {
                     current = current.left;
+                    level++;
                     if (current == null) {
                         parent.left = node;
-                        return;
+                        break;
                     }
                 } else if (val > current.getValue()){
                     current = current.right;
+                    level++;
                     if (current == null) {
                         parent.right = node;
-                        return;
+                        break;
                     }
                 } else {
-                    return;
+                    break;
                 }
             }
         }
+        return level;
     }
 
     public Integer find(int val) {
@@ -73,9 +77,14 @@ public class Tree {
 
     private void preOrderTraverse(TreeNode current) {
         if (current != null) {
-            System.out.print(current.getValue() + " ");
+            System.out.print(current.getValue());
+            if (current.left == null && current.right == null)
+                return;
+            System.out.print("(");
             preOrderTraverse(current.left);
+            System.out.print(",");
             preOrderTraverse(current.right);
+            System.out.print(")");
         }
     }
 
@@ -155,23 +164,29 @@ public class Tree {
         return s;
     }
 
+    //Возвращает максимальный уровень наследников с учетом самого элемента
+    //или -1, если максимальные уровни наследников различаются более, чем на 1
+    private int checkLevels(TreeNode n) {
+        if (n == null)
+            return 0;
+        int cntLeft = checkLevels(n.left);
+        int cntRight;
+        if (cntLeft == -1)
+            return -1;
+        else {
+            cntRight = checkLevels(n.right);
+            if (cntRight == -1)
+                return -1;
+        }
+        if (Math.abs(cntLeft - cntRight) > 1)
+            return -1;
+        else
+            return Math.max(cntLeft + 1, cntRight +1);
+
+    }
+
+    public boolean isBalanced() {
+        int check = checkLevels(root);
+        return check != -1;
+    }
 }
-// 23 22 89 25 10 18 39 53 75 27 9 16 87 33 17 23 17
-
-// 9 (4 (2 (1, 3), 8 (6 (5, 7), N)), 13 (11 (10, 12), 15 (14, 16)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
