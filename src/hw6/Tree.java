@@ -34,11 +34,12 @@ public class Tree {
 
     TreeNode root;
 
-    public int insert(int val) {
+    public boolean insert(int val, int maxLevel) {
         int level = 1;
         TreeNode node = new TreeNode(val);
         if (root == null) {
             root = node;
+            return true;
         } else {
             TreeNode current = root;
             TreeNode parent = null;
@@ -48,22 +49,27 @@ public class Tree {
                     current = current.left;
                     level++;
                     if (current == null) {
-                        parent.left = node;
-                        break;
+                        if (level <= maxLevel) {
+                            parent.left = node;
+                            return true;
+                        } else
+                            return false;
                     }
                 } else if (val > current.getValue()){
                     current = current.right;
                     level++;
                     if (current == null) {
+                        if (level <= maxLevel) {
                         parent.right = node;
-                        break;
+                            return true;
+                        } else
+                            return false;
                     }
                 } else {
-                    break;
+                    return true;
                 }
             }
         }
-        return level;
     }
 
     public Integer find(int val) {
