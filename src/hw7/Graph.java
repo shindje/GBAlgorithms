@@ -1,8 +1,5 @@
 package hw7;
 
-import hw3.Queue;
-import hw3.Stack;
-
 public class Graph {
     private class Vertex {
         char label;
@@ -18,6 +15,16 @@ public class Graph {
             return "Vertex{" +
                     "label=" + label +
                     '}';
+        }
+    }
+
+    private class TreeNode {
+        int value;
+        TreeNode parent;
+
+        TreeNode(int value, TreeNode parent) {
+            this.value = value;
+            this.parent = parent;
         }
     }
 
@@ -72,7 +79,7 @@ public class Graph {
     }
 
     public void widthTraverse() {
-        Queue queue = new Queue(MAX_VERTICES);
+        Queue<Integer> queue = new Queue(MAX_VERTICES);
         vertexList[0].wasVisited = true;
         displayVertex(0);
         queue.insert(0);
@@ -85,12 +92,61 @@ public class Graph {
                 queue.insert(vNext);
             }
         }
+    }
 
+    public void way(int from, int to) {
+        resetFlags();
+        Queue<TreeNode> queue = new Queue(MAX_VERTICES);
+        vertexList[to].wasVisited = true;
+        TreeNode node = new TreeNode(to, null);
+        queue.insert(node);
+
+        while (!queue.isEmpty()) {
+            TreeNode vCurrent = queue.remove();
+            int vNext;
+            while ((vNext = getUnvisitedVertex(vCurrent.value)) != -1) {
+                if (vNext == from) {
+                    System.out.print(vertexList[vNext].label);
+                    while(vCurrent != null) {
+                        System.out.print(" -> " + vertexList[vCurrent.value].label);
+                        vCurrent = vCurrent.parent;
+                    }
+                    System.out.println();
+                    return;
+                } else {
+                    vertexList[vNext].wasVisited = true;
+                    queue.insert(new TreeNode(vNext, vCurrent));
+                }
+            }
+        }
+        System.out.println("The way wasn't found");
     }
 
     private void resetFlags() {
         for (int i = 0; i < size; i++) {
             vertexList[i].wasVisited = false;
+        }
+    }
+
+    public char get(int idx) {
+        if (idx < 0 || idx >= size)
+            throw new IndexOutOfBoundsException();
+        else
+            return vertexList[idx].label;
+    }
+
+    public void displayGraph() {
+        System.out.print("   ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(vertexList[i].label + "  ");
+        }
+        System.out.println();
+        for (int i = 0; i < size; i++) {
+            System.out.print(vertexList[i].label + "  ");
+            for (int j = 0; j < size; j++) {
+                System.out.print(i==j?".  ": adjMatrix[i][j]==0? "   ": "X"  + "  ");
+            }
+            System.out.println();
         }
     }
 }
